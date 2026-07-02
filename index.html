@@ -222,19 +222,22 @@
     gap: 0px;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
+    scroll-snap-type: x mandatory;
 }
         .carousel-container::-webkit-scrollbar { display: none; }
         .carousel-card {
     flex: 0 0 65%;
     transform-style: preserve-3d; 
-    transition: all 0.4s ease; 
+    transition: opacity 0.4s ease, transform 0.4s ease, filter 0.4s ease; 
     opacity: 0.5; 
     transform: scale(0.85); 
     filter: blur(2px) grayscale(50%); 
     position: relative; 
     margin: 0 10px; display: flex; 
     flex-direction: column; 
-    align-items: center; }
+    align-items: center;
+    scroll-snap-align: center;
+    scroll-snap-stop: always; }
 .carousel-card.active { 
     opacity: 1; 
       transform: scale(1.05);
@@ -885,10 +888,6 @@ const clean = cols.map(c =>
 
 initCarouselObserver();
 
-enableStepCarousel("carousel-upcoming");
-enableStepCarousel("carousel-past");
- 
-
             } catch (error) {
                 console.error("Chyba načítania:", error);
                 const uc = document.getElementById('carousel-upcoming');
@@ -1026,44 +1025,6 @@ window.addEventListener("popstate", function(event) {
             if (sg) sg.insertAdjacentHTML('beforeend',
                 `<a href="${spotifyPlaylistUrl}" target="_blank" class="social-link" style="border-color:#1DB954;"><i class="fab fa-spotify" style="color:#1DB954;"></i> PLAYLIST</a>`);
         }
-function enableStepCarousel(containerId) {
-    const container = document.getElementById(containerId);
-    if (!container) return;
-
-    let scrollTimeout;
-
-    container.addEventListener("scroll", () => {
-
-        clearTimeout(scrollTimeout);
-
-        scrollTimeout = setTimeout(() => {
-
-            const cards = container.querySelectorAll(".carousel-card");
-            const containerCenter = container.scrollLeft + container.offsetWidth / 2;
-
-            let closestIndex = 0;
-            let closestDistance = Infinity;
-
-            cards.forEach((card, index) => {
-                const cardCenter = card.offsetLeft + card.offsetWidth / 2;
-                const distance = Math.abs(containerCenter - cardCenter);
-
-                if (distance < closestDistance) {
-                    closestDistance = distance;
-                    closestIndex = index;
-                }
-            });
-
-            const targetCard = cards[closestIndex];
-
-            container.scrollTo({
-                left: targetCard.offsetLeft - (container.offsetWidth - targetCard.offsetWidth) / 2,
-                behavior: "smooth"
-            });
-
-        }, 120); // počkáme kým inerčný scroll skončí
-    });
-}
     </script>
 </body>
 </html>
