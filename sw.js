@@ -1,7 +1,7 @@
-// Furmanka PUNK – service worker
-// Zabezpečuje: rýchlejší štart, offline shell, vždy čerstvé dáta z Gistu.
+// Kôňcerty – service worker
+// Zabezpečuje: rýchlejší štart, offline shell, vždy čerstvé dáta z Gistu, vždy čerstvý HTML shell.
 
-const CACHE = 'furmanka-v1';
+const CACHE = 'koncerty-v2';
 const SHELL = ['./', './index.html', './manifest.json'];
 
 self.addEventListener('install', (e) => {
@@ -28,6 +28,22 @@ self.addEventListener('fetch', (e) => {
   let url;
   try { url = new URL(req.url); } catch (err) { return; }
 
+  // HTML stránka (navigácia) – VŽDY najprv zo siete, aby telefón dostal aktuálnu verziu appky
+  // po každom nasadení. Cache slúži len ako záchranná sieť pri výpadku pripojenia.
+  const isNavigation = req.mode === 'navigate' || (req.destination === 'document');
+  if (isNavigation) {
+    e.respondWith(
+      fetch(req)
+        .then((resp) => {
+          const copy = resp.clone();
+          caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {});
+          return resp;
+        })
+        .catch(() => caches.match(req).then((cached) => cached || caches.match('./index.html')))
+    );
+    return;
+  }
+
   // Dáta o koncertoch / "o nás" – vždy zo siete, pri výpadku skús cache
   const isLiveData = url.hostname.includes('gist') || url.search.includes('t=');
   if (isLiveData) {
@@ -35,7 +51,7 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
-  // Zvyšok (shell, plagáty, fonty…) – najprv cache, potom sieť, fallback index
+  // Zvyšok (manifest, plagáty, fonty…) – najprv cache, potom sieť, fallback index
   e.respondWith(
     caches.match(req).then((cached) => {
       if (cached) return cached;

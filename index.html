@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Furmanka PUNK</title>
+    <title>Kôňcerty</title>
 
     <!-- PWA / pridanie na plochu -->
     <link rel="manifest" href="manifest.json">
@@ -11,7 +11,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Furmanka">
+    <meta name="apple-mobile-web-app-title" content="Kôňcerty">
     <!-- ZMEŇ na vlastnú štvorcovú ikonu 180x180 (najlepšie lokálny súbor v repe) -->
     <link rel="apple-touch-icon" href="https://i.postimg.cc/MZN7znGd/IMG-20251211-132426.png">
     <link rel="icon" href="https://i.postimg.cc/MZN7znGd/IMG-20251211-132426.png">
@@ -536,10 +536,10 @@
             <div class="page-title">SIETE</div>
         </div>
         <div class="social-grid">
-            <a href="https://www.facebook.com/furmankanemastovo" target="_blank" class="social-link" style="border-color:#1877F2;">
+            <a href="https://www.facebook.com/k0ncerty" target="_blank" class="social-link" style="border-color:#1877F2;">
                 <i class="fab fa-facebook" style="color:#1877F2;"></i> FACEBOOK
             </a>
-            <a href="https://www.instagram.com/" target="_blank" class="social-link" style="border-color:#E1306C;">
+            <a href="https://www.instagram.com/k0ncerty/" target="_blank" class="social-link" style="border-color:#E1306C;">
                 <i class="fab fa-instagram" style="color:#E1306C;"></i> INSTAGRAM
             </a>
             <a onclick="shareApp()" class="social-link" style="border-color:var(--accent-color); cursor:pointer;">
@@ -857,6 +857,7 @@ const clean = cols.map(c =>
                             nextEventDate = eventDateObj;
                             nextEventTitle = mainTitle;
                             if (event.icon && event.icon.length > 5) nextEventIcon = event.icon;
+                            else if (event.poster && event.poster.length > 5) nextEventIcon = event.poster;
                         }
                     }
                 });

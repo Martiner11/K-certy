@@ -1,7 +1,7 @@
 {
-  "name": "Furmanka PUNK",
-  "short_name": "Furmanka",
-  "description": "Koncerty vo Furmanke — Námestovo. Program, archív, merch a pripomienky.",
+  "name": "Kôňcerty",
+  "short_name": "Kôňcerty",
+  "description": "Kôňcerty — Punk, Ska a Rock'n'Roll vo Furmanke, Námestovo. Program, archív, merch a pripomienky.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
