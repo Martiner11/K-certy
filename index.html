@@ -715,6 +715,18 @@ function handleButtonClick(screenId) {
 async function loadApp() {
     document.getElementById('dynamic-upcoming-img').src = defaultUpcomingImg;
 
+    function detectCsvDelimiter(headerLine) {
+        const semi = (headerLine.match(/;/g) || []).length;
+        const comma = (headerLine.match(/,/g) || []).length;
+        return semi > comma ? ';' : ',';
+    }
+    function splitCsvRow(row, delimiter) {
+        const re = delimiter === ';'
+            ? /;(?=(?:(?:[^"]*"){2})*[^"]*$)/
+            : /,(?=(?:(?:[^"]*"){2})*[^"]*$)/;
+        return row.split(re);
+    }
+
 
 document.getElementById('countdown-bar').innerHTML = `
     <div class="count-band">
@@ -753,10 +765,12 @@ document.getElementById('countdown-bar').innerHTML = `
     try {
                 const response = await fetch(gistUrl + "?t=" + Date.now());
                 const data = await response.text();
+
 const rows = data.trim().split(/\r?\n/);
 if (rows.length === 0) return;
 
-const headerCols = rows[0].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+const csvDelimiter = detectCsvDelimiter(rows[0]);
+const headerCols = splitCsvRow(rows[0], csvDelimiter);
 const headers = headerCols.map(h => h.replace(/^"|"$/g, '').trim().toLowerCase());
 function getIndex(name) {
     return headers.indexOf(name.toLowerCase());
@@ -767,7 +781,7 @@ for (let i = 1; i < rows.length; i++) {
     const row = rows[i];
     if (!row.trim()) continue;
 
-    const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+    const cols = splitCsvRow(row, csvDelimiter);
 const clean = cols.map(c => 
     c ? c.replace(/^"|"$/g, '').replace(/\r/g, '').trim() : ''
 );
@@ -920,11 +934,12 @@ initCarouselObserver();
                 const aboutRows = txt.trim().split('\n');
                 const aboutContainer = document.getElementById('about-container');
                 const startIdx = aboutRows[0].toLowerCase().includes("popis") ? 1 : 0;
+                const aboutDelimiter = detectCsvDelimiter(aboutRows[0]);
                 let html = "";
                 for(let i = startIdx; i < aboutRows.length; i++) {
                     const row = aboutRows[i];
                     if(!row.trim()) continue;
-                    const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                    const cols = splitCsvRow(row, aboutDelimiter);
                     const clean = cols.map(c => c ? c.replace(/^"|"$/g, '').trim() : '');
                     const [popis, imgUrl] = clean;
                     html += `<div class="about-item">${imgUrl ? `<img src="${imgUrl}" class="about-img">` : ''}<div class="about-text">${popis}</div></div>`;
