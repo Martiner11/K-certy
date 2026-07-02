@@ -1,0 +1,1067 @@
+<!DOCTYPE html>
+<html lang="sk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Furmanka PUNK</title>
+
+    <!-- PWA / pridanie na plochu -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#000000">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Furmanka">
+    <!-- ZMEŇ na vlastnú štvorcovú ikonu 180x180 (najlepšie lokálny súbor v repe) -->
+    <link rel="apple-touch-icon" href="https://i.postimg.cc/MZN7znGd/IMG-20251211-132426.png">
+    <link rel="icon" href="https://i.postimg.cc/MZN7znGd/IMG-20251211-132426.png">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@300;400;600&display=swap&subset=latin-ext" rel="stylesheet">
+    
+    <style>
+:root {
+--primary-font: 'Oswald', sans-serif;
+            --text-color: #ffffff;
+            --accent-color: #ffcc00; 
+        }
+
+        body { 
+            background-image: 
+                linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.5)), 
+                url('https://i.postimg.cc/MKWjf3dD/IMG-20251210-160137.png');
+            background-position: top center;
+            background-repeat: no-repeat;
+            background-size: cover; 
+            background-attachment: fixed; 
+            color: var(--text-color); 
+            font-family: var(--primary-font); 
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0; padding: 0; 
+            -webkit-tap-highlight-color: transparent;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        button, input, textarea, h1, h2, h3, p, span, div, a {
+            font-family: var(--primary-font) !important;
+            text-transform: uppercase !important;
+        }
+
+        /* --- UPRAVENÝ ODPOČET --- */
+#countdown-bar {
+    width: 100%;
+    background: transparent;
+    color: white;
+    text-align: center;
+    padding-top: 2px; 
+    padding-bottom: 4px;
+    font-size: clamp(0.8rem, 4vw, 1.1rem); 
+    line-height: 1.1;
+    text-shadow: 2px 2px 4px #000;
+    display: none; 
+    z-index: 100;
+    margin-top: -5px;
+    margin-bottom: 2px;
+}
+        
+        .countdown-time { color: white; }
+
+.screen { 
+    display: none; 
+    width: 100%; 
+    min-height: 100dvh; 
+}
+        .screen.active { display: block !important; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        /* --- DOMOVSKÁ OBRAZOVKA --- */
+#screen-home.active {
+    height: 100dvh;
+}
+
+.home-header { 
+    text-align: center; 
+    margin-bottom: 8px; 
+    flex-shrink: 0; 
+    width: 100%; 
+    z-index: 10; 
+}
+
+.main-logo { 
+    width: clamp(200px, 42vw, 320px);
+    height: auto; 
+    display: block; 
+    margin: 0 auto; 
+   transform: translateX(18px);
+    filter: drop-shadow(8px 14px 16px rgba(0,0,0,0.9)); 
+}                   
+        
+        /* HLAVNÉ MENU */
+.menu-grid { 
+    flex-grow: 1; 
+    display: flex; 
+    flex-direction: row; 
+    justify-content: center; 
+    align-items: center; 
+    gap: 20px; 
+    width: 100%; 
+    margin: 0; 
+    z-index: 20; 
+}
+
+.img-btn-wrapper { 
+    width: 40%; 
+    max-width: 200px; 
+    cursor: pointer; 
+    z-index: 50; 
+}
+
+.btn-image { 
+    width: 100%; 
+    height: auto; 
+    display: block; 
+    filter: drop-shadow(4px 8px 8px rgba(0,0,0,0.8)); 
+    border-radius: 2px; 
+    object-fit: contain; 
+    max-height: 55dvh; 
+}
+
+#btn-upcoming { 
+    transform: rotate(-3deg); 
+    z-index: 2; 
+}
+
+#btn-archive { 
+    transform: rotate(3deg) translateY(15px); 
+    z-index: 1; 
+}
+
+        /* SPODNÁ ČASŤ */
+.bottom-container { 
+    display: flex; 
+    width: 100%; 
+    justify-content: center; 
+    align-items: flex-end; 
+    margin-top: auto; 
+    gap: 20px; 
+    padding-bottom: 20px; 
+}
+
+.left-col { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: flex-start; 
+    padding-left: 5px; 
+    gap: 18px; 
+}
+
+.right-col { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: flex-end; 
+    padding-right: 5px; 
+    gap: 8px; 
+}
+
+        /* Tlačidlá a efekty */
+        .action-btn { cursor: pointer; display: block; }
+        .btn-image, .small-btn-img, .back-btn-img, .social-link, .contact-btn { transition: transform 0.15s ease-out; }
+        .img-btn-wrapper:active .btn-image, .action-btn:active .small-btn-img, .back-btn-img:active { transform: scale(0.9) rotate(-2deg); }
+        .small-btn-img { width: 100%; height: auto; display: block; filter: drop-shadow(3px 5px 5px rgba(0,0,0,0.9)); }
+
+.size-s { width: 16vh; } 
+.size-m { width: 20vh; }  
+.size-l { width: 24vh; }
+
+        .rot-1 { transform: rotate(-3deg); }
+        .rot-2 { transform: rotate(4deg); align-self: center; }
+        .rot-3 { transform: rotate(2deg); margin-top: 10px; }
+        .rot-4 { transform: rotate(5deg); }
+        .rot-5 { transform: rotate(1deg); }
+
+        /* HEADER PODSTRÁNOK */
+.page-header { 
+    display: flex; 
+    justify-content: center;
+    align-items: center; 
+    padding: 10px 0;
+    margin: 10px 0 5px 0;
+    position: relative;
+}
+.back-btn-img { 
+    display: block;
+    position: absolute;
+    left: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: auto;
+    cursor: pointer;
+    filter: drop-shadow(2px 2px 3px #000);
+    transition: transform 0.15s ease-out;
+}
+.back-btn-img:active { transform: translateY(-50%) scale(0.85); }
+.page-title { 
+    font-size: 2rem; 
+    color: var(--accent-color); 
+    text-align: center; 
+    line-height: 1; 
+    text-shadow: 2px 2px 0 #000; 
+    margin: 0;
+}
+
+        /* CAROUSEL */
+.carousel-container {
+    display: flex;
+    overflow-x: auto;
+    padding: 20px 0 40px 0;
+    gap: 0px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+        .carousel-container::-webkit-scrollbar { display: none; }
+        .carousel-card {
+    flex: 0 0 65%;
+    transform-style: preserve-3d; 
+    transition: all 0.4s ease; 
+    opacity: 0.5; 
+    transform: scale(0.85); 
+    filter: blur(2px) grayscale(50%); 
+    position: relative; 
+    margin: 0 10px; display: flex; 
+    flex-direction: column; 
+    align-items: center; }
+.carousel-card.active { 
+    opacity: 1; 
+      transform: scale(1.05);
+    filter: blur(0px) grayscale(0%); 
+    z-index: 10; 
+}
+        .poster-clean { width: 100%; height: auto; border-radius: 4px; box-shadow: 0 15px 30px rgba(0,0,0,0.8); display: block; }
+        .card-mini-info { margin-top: 15px; text-align: center; opacity: 0; transition: opacity 0.3s; }
+        .carousel-card.active .card-mini-info { opacity: 1; }
+        .mini-title { font-size: 1.5rem; line-height: 1; margin-bottom: 5px; text-shadow: 2px 2px 0 #000; }
+        .mini-date { font-size: 1rem; color: #ccc; text-shadow: 1px 1px 0 #000; }
+        .click-hint { font-size: 0.8rem; color: var(--accent-color); margin-top: 5px; animation: blink 2s infinite; }
+
+        /* OSTATNÉ */
+        .social-grid, .merch-grid { display: flex; flex-direction: column; gap: 20px; align-items: center; padding: 20px; }
+        .social-link { display: flex; align-items: center; justify-content: center; gap: 15px; width: 100%; max-width: 300px; padding: 20px; border: 3px solid white; background: rgba(0,0,0,0.5); color: white; text-decoration: none; font-size: 1.5rem; transform: rotate(-2deg); transition: transform 0.2s; }
+        .social-link:active { transform: scale(0.95); }
+        .contact-btn { display: block; width: 100%; background: black; border: 3px solid white; padding: 20px; margin-bottom: 20px; text-align: center; color: white; text-decoration: none; font-size: 2rem; box-shadow: 8px 8px 0 rgba(0,0,0,1); }
+        iframe { width: 100%; border: 4px solid white; margin-top: 20px; box-shadow: 8px 8px 0 rgba(0,0,0,1); }
+        .merch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; padding: 10px; }
+        .merch-item { background: rgba(0,0,0,0.8); border: 2px solid white; padding: 10px; text-align: center; }
+        .merch-img { width: 100%; height: 150px; background: transparent; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; color: white; border-bottom: 1px solid #555; }
+        .merch-name { font-size: 1.5rem; color: var(--accent-color); margin-bottom: 5px; }
+        .merch-price { font-size: 2rem; color: white; background: red; padding: 0 10px; display: inline-block; transform: rotate(-3deg); }
+        
+        /* O NÁS */
+        .about-container { padding: 20px; max-width: 600px; margin: 0 auto; }
+        .about-item { 
+            margin-bottom: 30px; 
+            text-align: center; 
+            background: rgba(0,0,0,0.6); 
+            padding: 15px; 
+            border: 2px dashed #555;
+            transform: rotate(-1deg);
+        }
+        .about-item:nth-child(even) { transform: rotate(1deg); }
+        .about-img {
+            width: 100%;
+            height: auto;
+            border: 5px solid white;
+            box-shadow: 5px 5px 10px rgba(0,0,0,0.8);
+            margin-bottom: 15px;
+            transform: rotate(2deg);
+        }
+        .about-item:nth-child(even) .about-img { transform: rotate(-2deg); }
+        .about-text { 
+            font-size: 1.4rem; 
+            color: #eee; 
+            text-shadow: 2px 2px 4px black; 
+            line-height: 1.4; 
+        }
+
+        /* MODAL */
+        #modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; display: none; flex-direction: column; overflow-y: auto; padding: 20px; box-sizing: border-box; animation: popIn 0.3s; }
+        @keyframes popIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .modal-close-btn { position: absolute; top: 20px; right: 20px; font-size: 3rem; color: white; cursor: pointer; z-index: 10000; }
+        .modal-content { margin-top: 40px; text-align: center; max-width: 600px; margin-left: auto; margin-right: auto; padding-bottom: 50px; }
+.modal-poster {
+    width: 80%;
+    max-width: 300px;
+    margin-bottom: 20px;
+}
+        .modal-title { font-size: 2.5rem; color: var(--accent-color); margin-bottom: 10px; line-height: 1; text-shadow: 2px 2px 0 black; }
+        .modal-info { font-size: 1.3rem; margin-bottom: 10px; color: #ddd; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        
+        .modal-desc { margin-top: 20px; text-align: left; background: rgba(0,0,0,0.5); padding: 15px; border-radius: 5px; border-top: 1px solid #555; }
+        .band-block { margin-bottom: 20px; border-bottom: 1px dashed #555; padding-bottom: 15px; }
+        .band-block:last-child { border-bottom: none; }
+        .band-name-detail { color: var(--accent-color); font-size: 1.5rem; margin-bottom: 5px; }
+        .band-meta { font-size: 0.9rem; color: #aaa; margin-bottom: 10px; font-style: italic; }
+        .band-bio { font-size: 1.1rem; color: #eee; white-space: pre-line; line-height: 1.4; }
+  .band-link {
+    display: inline-block;
+    margin-top: 10px;
+        color: #1DB954;
+    text-decoration: none;
+    padding: 5px 10px;
+    font-size: 0.9rem;
+}
+
+        .modal-buttons { display: flex; gap: 10px; margin-top: 30px; justify-content: center; flex-wrap: wrap; }
+.btn {
+    padding: 15px 25px;
+    text-decoration: none;
+    font-size: 1.2rem;
+    color: white;
+    background: rgba(0,0,0,0.5);
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+.btn-fb {
+    color: #1877F2;
+}
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+        .loading { font-size: 2rem; color: var(--accent-color); text-align: center; margin-top: 50px; text-shadow: 2px 2px 0 black; }
+        .footer-text { margin-top: 50px; font-size: 1rem; color: #ccc; text-align: center; letter-spacing: 2px; padding-bottom: 30px; }
+        .countdown-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 10px;
+}
+
+.countdown-block {
+    text-align: center;
+}
+
+.count-number {
+    font-size: clamp(13px, 3.2vw, 18px);
+    font-weight: 500;
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+    line-height: 1.1;
+}
+
+.count-label {
+    font-size: clamp(8px, 2vw, 11px);
+    margin-top: 0px;
+    font-family: Arial, Helvetica, sans-serif;
+    color: white;
+    opacity: 0.8;
+}
+
+.count-band {
+    text-align: center;
+    font-size: clamp(20px, 5vw, 30px);
+    color: var(--accent-color);
+    margin-bottom: 8px;
+}
+.count-separator {
+    font-size: clamp(18px, 4vw, 28px);
+    color: white;
+    opacity: 1.0;
+}
+
+/* --- NOVÉ: tlačidlá v detaile koncertu --- */
+.btn-cal { color: var(--accent-color); border: 1px solid var(--accent-color); }
+.btn-share { color: #fff; border: 1px solid #fff; }
+.btn { border: 1px solid rgba(255,255,255,0.2); cursor: pointer; transition: transform 0.15s ease-out; }
+.btn:active { transform: scale(0.92); }
+
+/* --- NOVÉ: chybový stav --- */
+.error-box { width: 100%; text-align: center; padding-top: 50px; }
+.error-box p { font-size: 1.6rem; color: var(--accent-color); text-shadow: 2px 2px 0 #000; margin-bottom: 20px; }
+.retry-btn {
+    background: black; border: 3px solid var(--accent-color); color: var(--accent-color);
+    padding: 14px 26px; font-size: 1.3rem; cursor: pointer; box-shadow: 5px 5px 0 rgba(0,0,0,0.8);
+}
+.retry-btn:active { transform: translate(3px,3px); box-shadow: 2px 2px 0 rgba(0,0,0,0.8); }
+
+/* --- NOVÉ: tlačidlo Nainštalovať --- */
+#install-btn {
+    position: fixed; bottom: 14px; left: 50%; transform: translateX(-50%);
+    z-index: 200; background: var(--accent-color); color: #000; border: none;
+    padding: 12px 22px; font-size: 1.1rem; cursor: pointer; border-radius: 2px;
+    box-shadow: 4px 4px 0 rgba(0,0,0,0.9); display: none; align-items: center; gap: 8px;
+}
+#install-btn.show { display: inline-flex; }
+#install-btn:active { transform: translateX(-50%) scale(0.94); }
+    </style>
+<script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/4.0.0/model-viewer.min.js"></script>
+</head>
+<body>
+
+    <button id="install-btn" onclick="installApp()"><i class="fas fa-download"></i> NA PLOCHU</button>
+
+    <div id="screen-home" class="screen active">
+        <div class="home-content">
+            <div class="home-header">
+<img src="https://i.postimg.cc/MZN7znGd/IMG-20251211-132426.png" class="main-logo" alt="Logo">
+            </div>
+
+            <div id="countdown-bar">NAČÍTAVAM...</div>
+            
+            <div class="menu-grid">
+                <div id="btn-upcoming" class="img-btn-wrapper action-btn" onclick="handleButtonClick('screen-upcoming')">
+<img id="dynamic-upcoming-img"
+     class="btn-image"
+     alt="Najbližšie">
+                </div>
+                <div id="btn-archive" class="img-btn-wrapper action-btn" onclick="handleButtonClick('screen-past')">
+                    <img src="https://i.postimg.cc/yNmd7XxC/archiv_koncertov.png" class="btn-image" alt="Archív">
+                </div>
+            </div>
+
+            <div class="bottom-container">
+                <div class="left-col">
+                    <div class="about-btn-wrapper action-btn size-l rot-1" onclick="handleButtonClick('screen-about')">
+                        <img src="https://i.postimg.cc/8P8YWLkx/IMG-20251213-095003.png" class="small-btn-img" alt="O Nás">
+                    </div>
+                    <div class="mech-btn-wrapper action-btn size-m rot-2" onclick="handleButtonClick('screen-merch')">
+                        <img src="https://i.postimg.cc/MK779RDr/IMG-20251213-110006.png" class="small-btn-img" alt="Náš Mech">
+                    </div>
+                </div>
+                <div class="right-col">
+                    <div class="small-btn-wrapper action-btn size-s rot-3" onclick="handleButtonClick('screen-contact')">
+                        <img src="https://i.postimg.cc/ZR58ZS2S/IMG_20251213_070108.png" class="small-btn-img" alt="Kontakt">
+                    </div>
+                    <div class="small-btn-wrapper action-btn size-s rot-4" onclick="handleButtonClick('screen-map')">
+                        <img src="https://i.postimg.cc/TwNr3svW/IMG_20251213_070131.png" class="small-btn-img" alt="Mapa">
+                    </div>
+                    <div class="small-btn-wrapper action-btn size-s rot-5" onclick="handleButtonClick('screen-social')">
+                        <img src="https://i.postimg.cc/904yRBcP/IMG_20251213_070156.png" class="small-btn-img" alt="Social">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="screen-upcoming" class="screen">
+        <div class="page-header">
+            <img src="https://i.postimg.cc/vZqjcDqj/Screenshot-2025-12-11-20-07-22-115-com-google-android-googlequicksearchbox-Photoroom.png" class="back-btn-img" onclick="handleButtonClick('screen-home')" alt="Späť">
+            <div class="page-title">Program</div>
+        </div>
+        <div id="carousel-upcoming" class="carousel-container">
+            <div class="loading">HĽADÁM PLAGÁTY...</div>
+        </div>
+    </div>
+
+    <div id="screen-past" class="screen">
+        <div class="page-header">
+            <img src="https://i.postimg.cc/vZqjcDqj/Screenshot-2025-12-11-20-07-22-115-com-google-android-googlequicksearchbox-Photoroom.png" class="back-btn-img" onclick="handleButtonClick('screen-home')" alt="Späť">
+            <div class="page-title">ARCHÍV</div>
+        </div>
+        <div id="carousel-past" class="carousel-container">
+            <p style="text-align:center; color:#ccc; font-size:1.5rem; width:100%;">TU SKAPAL PES...</p>
+        </div>
+    </div>
+
+    <div id="screen-about" class="screen">
+        <div class="page-header">
+            <img src="https://i.postimg.cc/vZqjcDqj/Screenshot-2025-12-11-20-07-22-115-com-google-android-googlequicksearchbox-Photoroom.png" class="back-btn-img" onclick="handleButtonClick('screen-home')" alt="Späť">
+            <div class="page-title">O NÁS</div>
+        </div>
+        <div id="about-container" class="about-container">
+            <div class="loading">Načítavam info...</div>
+        </div>
+    </div>
+
+    <div id="screen-merch" class="screen">
+        <div class="page-header">
+            <img src="https://i.postimg.cc/vZqjcDqj/Screenshot-2025-12-11-20-07-22-115-com-google-android-googlequicksearchbox-Photoroom.png" class="back-btn-img" onclick="handleButtonClick('screen-home')" alt="Späť">
+            <div class="page-title">KÚP SI TO</div>
+        </div>
+        <div class="merch-grid">
+          <div class="merch-item">
+            <div class="merch-img" style="height: 250px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden;"> 
+                <model-viewer 
+                    src="https://cdn.jsdelivr.net/gh/Martiner11/3D-MODELY@main/tshirt.glb" 
+                    camera-controls 
+                    auto-rotate 
+                    shadow-intensity="1" 
+                    environment-image="neutral" 
+                    exposure="1"
+                    loading="eager"
+                    style="width: 100%; height: 100%; outline: none;">
+                    <div slot="poster" style="color: var(--accent-color); padding-top: 100px;">Načítavam 3D model...</div>
+                </model-viewer>
+            </div>
+            <div class="merch-name">TRIČKO (3D NÁHĽAD)</div>
+            <div class="merch-price">15 €</div>
+          </div>
+          <div class="merch-item">
+                <div class="merch-img"><i class="fas fa-hat-cowboy fa-3x"></i></div>
+                <div class="merch-name">ŠILTOVKA</div>
+                <div class="merch-price">12 €</div>
+          </div>
+        </div>
+        <p style="text-align:center; color:#fff; margin-top:30px; font-size: 1.2rem; background: rgba(0,0,0,0.5); padding: 10px;">
+            PÝTAJ SI NA BARE.
+        </p>
+    </div>
+
+    <div id="screen-contact" class="screen">
+        <div class="page-header">
+            <img src="https://i.postimg.cc/vZqjcDqj/Screenshot-2025-12-11-20-07-22-115-com-google-android-googlequicksearchbox-Photoroom.png" class="back-btn-img" onclick="handleButtonClick('screen-home')" alt="Späť">
+            <div class="page-title">KONTAKT</div>
+        </div>
+        <div style="padding: 20px;">
+            <a href="tel:+421900000000" class="contact-btn"><i class="fas fa-phone"></i> ZAVOLAŤ</a>
+            <p style="text-align:center; margin-top:20px; font-size:1.2rem;">FURMANKA PUB<br>NÁMESTOVO</p>
+        </div>
+    </div>
+
+    <div id="screen-map" class="screen">
+        <div class="page-header">
+            <img src="https://i.postimg.cc/vZqjcDqj/Screenshot-2025-12-11-20-07-22-115-com-google-android-googlequicksearchbox-Photoroom.png" class="back-btn-img" onclick="handleButtonClick('screen-home')" alt="Späť">
+            <div class="page-title">MAPA</div>
+        </div>
+        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2616.536465492434!2d19.48123457636904!3d49.403561979344485!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4715c60f25a58793%3A0x6c6e75551351111!2sFurmanka!5e0!3m2!1ssk!2ssk!4v1709123456789!5m2!1ssk!2ssk" width="100%" height="450" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+    </div>
+
+    <div id="screen-social" class="screen">
+        <div class="page-header">
+            <img src="https://i.postimg.cc/vZqjcDqj/Screenshot-2025-12-11-20-07-22-115-com-google-android-googlequicksearchbox-Photoroom.png" class="back-btn-img" onclick="handleButtonClick('screen-home')" alt="Späť">
+            <div class="page-title">SIETE</div>
+        </div>
+        <div class="social-grid">
+            <a href="https://www.facebook.com/furmankanemastovo" target="_blank" class="social-link" style="border-color:#1877F2;">
+                <i class="fab fa-facebook" style="color:#1877F2;"></i> FACEBOOK
+            </a>
+            <a href="https://www.instagram.com/" target="_blank" class="social-link" style="border-color:#E1306C;">
+                <i class="fab fa-instagram" style="color:#E1306C;"></i> INSTAGRAM
+            </a>
+            <a onclick="shareApp()" class="social-link" style="border-color:var(--accent-color); cursor:pointer;">
+                <i class="fas fa-share-nodes" style="color:var(--accent-color);"></i> POŠLI KAMOŠOVI
+            </a>
+        </div>
+    </div>
+
+    <div id="modal-overlay" onclick="overlayClick(event)">
+        <div class="modal-close-btn" onclick="closeModal()">×</div>
+        <div class="modal-content" id="modal-content-body"></div>
+    </div>
+
+    <script>
+function handleButtonClick(screenId) {
+    setTimeout(function() {
+        showScreen(screenId);
+        history.pushState({ screen: screenId }, "", "#" + screenId);
+    }, 200);
+}
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(screenId).classList.add('active');
+            
+            if(screenId === 'screen-home') {
+                document.body.style.overflow = 'hidden';
+            } else {
+                document.body.style.overflow = 'auto';
+            }
+
+            window.scrollTo(0, 0);
+            setTimeout(initCarouselObserver, 100);
+        }
+
+        function closeModal() {
+            document.getElementById('modal-overlay').style.display = 'none';
+        }
+
+        // Zatvorenie modalu klikom mimo obsahu
+        function overlayClick(e) {
+            if (e.target && e.target.id === 'modal-overlay') closeModal();
+        }
+        // Zatvorenie modalu klávesou Esc
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeModal();
+        });
+
+        // Parsovanie dátumu "DD.MM.YYYY" + času "HH:MM" -> Date (null ak sa nedá)
+        function parseEventDate(dateStr, timeStr) {
+            if (!dateStr) return null;
+            const parts = dateStr.replace(/\s/g, '').split('.');
+            if (parts.length < 3) return null;
+            let hour = 20, minute = 0;
+            if (timeStr && timeStr.includes(':')) {
+                const t = timeStr.split(':');
+                hour = parseInt(t[0]); minute = parseInt(t[1]);
+            }
+            return new Date(parseInt(parts[2]), parseInt(parts[1]) - 1, parseInt(parts[0]), hour, minute);
+        }
+
+        function icsEscape(s) {
+            return (s || '').replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n');
+        }
+        function pad2(n) { return n < 10 ? '0' + n : '' + n; }
+
+        // Stiahne .ics — telefón si pridá koncert do kalendára a deň vopred pripomenie
+        function addToCalendar() {
+            const e = window.currentEvent;
+            if (!e) return;
+            const start = parseEventDate(e.date, e.time);
+            if (!start) { alert('Neznámy dátum koncertu.'); return; }
+            const end = new Date(start.getTime() + 3 * 60 * 60 * 1000); // +3 h
+            function fmt(dt) {
+                return dt.getFullYear() + pad2(dt.getMonth() + 1) + pad2(dt.getDate()) +
+                       'T' + pad2(dt.getHours()) + pad2(dt.getMinutes()) + '00';
+            }
+            const ics = [
+                'BEGIN:VCALENDAR', 'VERSION:2.0', 'PRODID:-//Furmanka//PUNK//SK', 'CALSCALE:GREGORIAN',
+                'BEGIN:VEVENT',
+                'UID:furmanka-' + start.getTime() + '@furmanka',
+                'DTSTAMP:' + fmt(new Date()),
+                'DTSTART:' + fmt(start),
+                'DTEND:' + fmt(end),
+                'SUMMARY:' + icsEscape((e.title || 'Koncert') + ' @ Furmanka'),
+                'LOCATION:' + icsEscape(e.place || 'Furmanka, Námestovo'),
+                'DESCRIPTION:' + icsEscape('Koncert vo Furmanke.' + (e.price ? (' Vstupné: ' + e.price) : '')),
+                'BEGIN:VALARM', 'TRIGGER:-P1D', 'ACTION:DISPLAY',
+                'DESCRIPTION:' + icsEscape('Zajtra koncert vo Furmanke!'), 'END:VALARM',
+                'END:VEVENT', 'END:VCALENDAR'
+            ].join('\r\n');
+            const blob = new Blob([ics], { type: 'text/calendar;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'furmanka-koncert.ics';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(url), 1500);
+        }
+
+        // Zdieľanie konkrétneho koncertu
+        async function shareEvent() {
+            const e = window.currentEvent;
+            if (!e) return;
+            const txt = (e.title || 'Koncert') + ' • ' + e.date + (e.time ? (' o ' + e.time) : '') + ' • Furmanka Námestovo';
+            const url = location.href.split('#')[0];
+            try {
+                if (navigator.share) { await navigator.share({ title: 'Furmanka', text: txt, url: url }); }
+                else { await navigator.clipboard.writeText(txt + ' ' + url); alert('Skopírované do schránky!'); }
+            } catch (err) { /* používateľ zrušil */ }
+        }
+
+        // Zdieľanie celej appky
+        async function shareApp() {
+            const url = location.href.split('#')[0];
+            const txt = 'FURMANKA PUNK — všetky koncerty na jednom mieste';
+            try {
+                if (navigator.share) { await navigator.share({ title: 'Furmanka PUNK', text: txt, url: url }); }
+                else { await navigator.clipboard.writeText(txt + ' ' + url); alert('Skopírované do schránky!'); }
+            } catch (err) {}
+        }
+
+        // --- PWA: tlačidlo Nainštalovať ---
+        let deferredPrompt = null;
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            const b = document.getElementById('install-btn');
+            if (b) b.classList.add('show');
+        });
+        async function installApp() {
+            if (!deferredPrompt) return;
+            deferredPrompt.prompt();
+            await deferredPrompt.userChoice;
+            deferredPrompt = null;
+            const b = document.getElementById('install-btn');
+            if (b) b.classList.remove('show');
+        }
+        window.addEventListener('appinstalled', () => {
+            const b = document.getElementById('install-btn');
+            if (b) b.classList.remove('show');
+        });
+
+        // --- PWA: service worker (offline + rýchlejší štart) ---
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').catch(() => {});
+            });
+        }
+
+        // Voliteľný Spotify playlist — vlož link a tlačidlo sa samo pridá do SIETÍ
+        const spotifyPlaylistUrl = ""; // napr. "https://open.spotify.com/playlist/..."
+
+        const aboutUrl = "https://gist.githubusercontent.com/Martiner11/98b726f8972949d2725abec254c32102/raw/340f9a408e747fdfce6ff8dfd6e52d035dc811e6/onas.csv"; 
+        const gistUrl = "https://gist.githubusercontent.com/Martiner11/98b726f8972949d2725abec254c32102/raw/data.csv";
+        const defaultUpcomingImg = "https://i.postimg.cc/ZKg3vcmm/noconcert-poster.png";
+        
+        let updateTimer = null;
+
+async function loadApp() {
+    document.getElementById('dynamic-upcoming-img').src = defaultUpcomingImg;
+
+
+document.getElementById('countdown-bar').innerHTML = `
+    <div class="count-band">
+        NAJBLIŽŠÍ KÔŇCERT
+    </div>
+
+    <div class="countdown-wrapper">
+        <div class="countdown-block">
+            <div class="count-number">00</div>
+            <div class="count-label">DNI</div>
+        </div>
+
+        <div class="count-separator">|</div>
+
+        <div class="countdown-block">
+            <div class="count-number">00</div>
+            <div class="count-label">HOD</div>
+        </div>
+
+        <div class="count-separator">|</div>
+
+        <div class="countdown-block">
+            <div class="count-number">00</div>
+            <div class="count-label">MIN</div>
+        </div>
+
+        <div class="count-separator">|</div>
+
+        <div class="countdown-block">
+            <div class="count-number">00</div>
+            <div class="count-label">SEC</div>
+        </div>
+    </div>
+`;
+
+    try {
+                const response = await fetch(gistUrl + "?t=" + Date.now());
+                const data = await response.text();
+const rows = data.trim().split(/\r?\n/);
+if (rows.length === 0) return;
+
+const headerCols = rows[0].split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+const headers = headerCols.map(h => h.replace(/^"|"$/g, '').trim().toLowerCase());
+function getIndex(name) {
+    return headers.indexOf(name.toLowerCase());
+}
+const eventsMap = new Map();
+
+for (let i = 1; i < rows.length; i++) {
+    const row = rows[i];
+    if (!row.trim()) continue;
+
+    const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+const clean = cols.map(c => 
+    c ? c.replace(/^"|"$/g, '').replace(/\r/g, '').trim() : ''
+);
+
+    const datumStr = clean[getIndex("datum")];
+    const cas = clean[getIndex("cas")];
+    const miesto = clean[getIndex("miesto")];
+    const vstupne = clean[getIndex("vstupne")];
+    const plagat = clean[getIndex("plagat")];
+    const plagat_ikona = clean[getIndex("plagat_ikona")];
+    const fb_event = clean[getIndex("fb_event")];
+
+    const k_nazov = clean[getIndex("kapela_nazov")];
+    const k_mesto = clean[getIndex("kapela_mesto")];
+    const k_styl = clean[getIndex("kapela_styl")];
+    const k_bio = clean[getIndex("kapela_bio")];
+    const k_spotify = clean[getIndex("kapela_spotify")];
+    const k_fb = clean[getIndex("kapela_facebook")];
+
+    if (!datumStr) continue;
+
+    if (!eventsMap.has(datumStr)) {
+        eventsMap.set(datumStr, {
+            dateRaw: datumStr,
+            time: cas,
+            place: miesto,
+            price: vstupne,
+            poster: plagat,
+            icon: plagat_ikona,
+            fbEvent: fb_event,
+            bands: []
+        });
+    }
+
+    if (k_nazov) {
+        eventsMap.get(datumStr).bands.push({
+            name: k_nazov,
+            city: k_mesto,
+            style: k_styl,
+            bio: k_bio,
+            spotify: k_spotify,
+            fb: k_fb
+        });
+    }
+}
+
+
+                const upcomingContainer = document.getElementById('carousel-upcoming');
+                const pastContainer = document.getElementById('carousel-past');
+                
+                upcomingContainer.innerHTML = '<div style="flex: 0 0 17.5%;"></div>';
+                pastContainer.innerHTML = '<div style="flex: 0 0 17.5%;"></div>';
+
+                let upcomingEvents = [];
+                let pastEvents = [];
+                const today = new Date();
+                today.setHours(0,0,0,0); 
+                
+                let nextEventDate = null;
+                let nextEventTitle = "";
+                let nextEventIcon = null;
+
+                eventsMap.forEach((event) => {
+                    const parts = event.dateRaw.replace(/\s/g, '').split('.');
+                    let eventDateObj = new Date(8640000000000000); 
+                    
+                    if (parts.length >= 3) {
+                        let day = parseInt(parts[0]);
+                        let month = parseInt(parts[1]) - 1;
+                        let year = parseInt(parts[2]);
+                        let hour = 20; let minute = 0;
+                        if (event.time && event.time.includes(":")) {
+                            const t = event.time.split(":");
+                            hour = parseInt(t[0]); minute = parseInt(t[1]);
+                        }
+                        eventDateObj = new Date(year, month, day, hour, minute);
+                    }
+                    const mainTitle = event.bands.map(b => b.name).join(' & ');
+                    const eventDataObj = { title: mainTitle, date: event.dateRaw, time: event.time, place: event.place, price: event.price, poster: event.poster, fb_event: event.fbEvent, bands: event.bands };
+                    const eventDataEncoded = encodeURIComponent(JSON.stringify(eventDataObj));
+
+                    const cardHtml = `
+                        <div class="carousel-card" onclick="openDetail(this)" data-details="${eventDataEncoded}">
+                            ${event.poster ? `<img src="${event.poster}" class="poster-clean" alt="Plagát">` : '<div class="poster-clean" style="height:300px; background:#333; display:flex; align-items:center; justify-content:center;">BEZ FOTKY</div>'}
+                            <div class="card-mini-info">
+                                <div class="mini-title">${mainTitle}</div>
+                                <div class="mini-date">${event.dateRaw}</div>
+                                <div class="click-hint"><i class="fas fa-hand-pointer"></i> KLIK PRE INFO</div>
+                            </div>
+                        </div>
+                    `;
+
+                    if (eventDateObj < today) {
+                        pastEvents.push({ date: eventDateObj, html: cardHtml });
+                    } else {
+                        upcomingEvents.push({ date: eventDateObj, html: cardHtml });
+                        if (nextEventDate === null || eventDateObj < nextEventDate) {
+                            nextEventDate = eventDateObj;
+                            nextEventTitle = mainTitle;
+                            if (event.icon && event.icon.length > 5) nextEventIcon = event.icon;
+                        }
+                    }
+                });
+
+                // Odpočet a ikonka — spustí sa RAZ, až keď poznáme finálny najbližší koncert
+                if (nextEventDate) {
+                    startCountdown(nextEventDate, nextEventTitle);
+                    document.getElementById('dynamic-upcoming-img').src = nextEventIcon || defaultUpcomingImg;
+                } else {
+                    document.getElementById('countdown-bar').style.display = 'none';
+                    document.getElementById('dynamic-upcoming-img').src = defaultUpcomingImg;
+                }
+
+                upcomingEvents.sort((a, b) => a.date - b.date);
+                if (upcomingEvents.length > 0) upcomingEvents.forEach(e => upcomingContainer.innerHTML += e.html);
+                else upcomingContainer.innerHTML = "<p style='width:100%; text-align:center; padding-top:50px;'>ŽIADNE NOVÉ AKCIE...</p>";
+
+                pastEvents.sort((a, b) => b.date - a.date);
+                if (pastEvents.length > 0) pastEvents.forEach(e => pastContainer.innerHTML += e.html);
+                else pastContainer.innerHTML = "<p style='width:100%; text-align:center; padding-top:50px;'>ARCHÍV JE PRÁZDNY...</p>";
+
+                upcomingContainer.innerHTML += '<div style="flex: 0 0 17.5%;"></div>';
+                pastContainer.innerHTML += '<div style="flex: 0 0 17.5%;"></div>';
+
+initCarouselObserver();
+
+enableStepCarousel("carousel-upcoming");
+enableStepCarousel("carousel-past");
+ 
+
+            } catch (error) {
+                console.error("Chyba načítania:", error);
+                const uc = document.getElementById('carousel-upcoming');
+                if (uc) uc.innerHTML = `<div class="error-box">
+                        <p>DÁTA SA NENAČÍTALI.<br>SKONTROLUJ NET A SKÚS ZNOVA.</p>
+                        <button class="retry-btn" onclick="loadApp()">SKÚSIŤ ZNOVA</button>
+                    </div>`;
+                const pc = document.getElementById('carousel-past');
+                if (pc) pc.innerHTML = `<div class="error-box"><p>ARCHÍV SA NENAČÍTAL.</p></div>`;
+                document.getElementById('countdown-bar').style.display = 'none';
+            }
+
+            // O NÁS
+            try {
+                const resp = await fetch(aboutUrl + "?t=" + Date.now());
+                const txt = await resp.text();
+                const aboutRows = txt.trim().split('\n');
+                const aboutContainer = document.getElementById('about-container');
+                const startIdx = aboutRows[0].toLowerCase().includes("popis") ? 1 : 0;
+                let html = "";
+                for(let i = startIdx; i < aboutRows.length; i++) {
+                    const row = aboutRows[i];
+                    if(!row.trim()) continue;
+                    const cols = row.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/);
+                    const clean = cols.map(c => c ? c.replace(/^"|"$/g, '').trim() : '');
+                    const [popis, imgUrl] = clean;
+                    html += `<div class="about-item">${imgUrl ? `<img src="${imgUrl}" class="about-img">` : ''}<div class="about-text">${popis}</div></div>`;
+                }
+                if(html) aboutContainer.innerHTML = html;
+            } catch (e) { console.log("O nás error:", e); }
+        }
+
+        function initCarouselObserver() {
+            const options = { root: null, rootMargin: '0px', threshold: 0.7 };
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const container = entry.target.parentElement;
+                        container.querySelectorAll('.carousel-card').forEach(c => c.classList.remove('active'));
+                        entry.target.classList.add('active');
+                    }
+                });
+            }, options);
+            document.querySelectorAll('.carousel-card').forEach(card => observer.observe(card));
+        }
+
+        function openDetail(card) {
+            const encodedData = card.getAttribute('data-details');
+            const data = JSON.parse(decodeURIComponent(encodedData));
+            window.currentEvent = data;
+            const evDate = parseEventDate(data.date, data.time);
+            const isUpcoming = evDate ? (evDate.getTime() > Date.now()) : false;
+            const modalBody = document.getElementById('modal-content-body');
+            let bandsHtml = "";
+            if (data.bands && data.bands.length > 0) {
+                bandsHtml = `<div class="modal-desc">`;
+                data.bands.forEach(band => {
+                    bandsHtml += `<div class="band-block"><div class="band-name-detail">${band.name}</div>${band.city || band.style ? `<div class="band-meta">${band.city ? band.city : ''} ${band.style ? '• ' + band.style : ''}</div>` : ''}${band.bio ? `<div class="band-bio">${band.bio}</div>` : ''}${band.spotify ? `<a href="${band.spotify}" target="_blank" class="band-link"><i class="fab fa-spotify"></i> SPOTIFY</a>` : ''}
+                    ${band.fb ? `<a href="${band.fb}" target="_blank" class="band-link" style="border-color:#1877F2; color:#1877F2;"><i class="fab fa-facebook"></i> FACEBOOK</a>` : ''}</div
+                    
+                    >`;
+                });
+                bandsHtml += `</div>`;
+            }
+            modalBody.innerHTML = `${data.poster ? `<img src="${data.poster}" class="modal-poster">` : ''}<div class="modal-title">${data.title}</div><div class="modal-info"><i class="fas fa-calendar-day"></i> ${data.date}</div>${data.time ? `<div class="modal-info"><i class="far fa-clock"></i> ${data.time}</div>` : ''}${data.place ? `<div class="modal-info"><i class="fas fa-map-marker-alt"></i> ${data.place}</div>` : ''}${data.price ? `<div class="modal-info"><i class="fas fa-ticket-alt"></i> ${data.price}</div>` : ''}${bandsHtml}<div class="modal-buttons">${isUpcoming ? `<button class="btn btn-cal" onclick="addToCalendar()"><i class="fas fa-calendar-plus"></i> PRIPOMENÚŤ</button>` : ''}<button class="btn btn-share" onclick="shareEvent()"><i class="fas fa-share-nodes"></i> ZDIEĽAŤ</button>${data.fb_event ? `<a href="${data.fb_event}" target="_blank" class="btn btn-fb"><i class="fab fa-facebook"></i> UDALOSŤ</a>` : ''}</div>`;
+            document.getElementById('modal-overlay').style.display = 'flex';
+        }
+
+        function startCountdown(targetDate, bandName) {
+            const bar = document.getElementById('countdown-bar');
+            bar.style.display = 'block';
+            if (updateTimer) clearInterval(updateTimer);
+            updateTimer = setInterval(() => {
+                const now = new Date().getTime();
+                const distance = targetDate.getTime() - now;
+                if (distance < 0) {
+                    clearInterval(updateTimer);
+                    bar.innerHTML = "KONCERT PRÁVE PREBIEHA!"; 
+                    return;
+                }
+                const d = Math.floor(distance / (1000 * 60 * 60 * 24));
+                const h = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((distance % (1000 * 60)) / 1000);
+                const hStr = h < 10 ? '0'+h : h;
+                const mStr = m < 10 ? '0'+m : m;
+                const sStr = s < 10 ? '0'+s : s;
+    bar.innerHTML = `
+    <div class="count-band">
+        ${bandName}
+    </div>
+
+<div class="countdown-wrapper">
+    <div class="countdown-block">
+        <div class="count-number">${d}</div>
+        <div class="count-label">DNI</div>
+    </div>
+
+    <div class="count-separator">|</div>
+
+    <div class="countdown-block">
+        <div class="count-number">${hStr}</div>
+        <div class="count-label">HOD</div>
+    </div>
+
+    <div class="count-separator">|</div>
+
+    <div class="countdown-block">
+        <div class="count-number">${mStr}</div>
+        <div class="count-label">MIN</div>
+    </div>
+
+    <div class="count-separator">|</div>
+
+    <div class="countdown-block">
+        <div class="count-number">${sStr}</div>
+        <div class="count-label">SEC</div>
+    </div>
+</div>
+`;
+            }, 1000);
+        }
+window.addEventListener("popstate", function(event) {
+    if (event.state && event.state.screen) {
+        showScreen(event.state.screen);
+    } else {
+        showScreen("screen-home");
+    }
+});
+        loadApp();
+
+        // Ak je vyplnený Spotify playlist, pridaj tlačidlo do SIETÍ
+        if (spotifyPlaylistUrl) {
+            const sg = document.querySelector('#screen-social .social-grid');
+            if (sg) sg.insertAdjacentHTML('beforeend',
+                `<a href="${spotifyPlaylistUrl}" target="_blank" class="social-link" style="border-color:#1DB954;"><i class="fab fa-spotify" style="color:#1DB954;"></i> PLAYLIST</a>`);
+        }
+function enableStepCarousel(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    let scrollTimeout;
+
+    container.addEventListener("scroll", () => {
+
+        clearTimeout(scrollTimeout);
+
+        scrollTimeout = setTimeout(() => {
+
+            const cards = container.querySelectorAll(".carousel-card");
+            const containerCenter = container.scrollLeft + container.offsetWidth / 2;
+
+            let closestIndex = 0;
+            let closestDistance = Infinity;
+
+            cards.forEach((card, index) => {
+                const cardCenter = card.offsetLeft + card.offsetWidth / 2;
+                const distance = Math.abs(containerCenter - cardCenter);
+
+                if (distance < closestDistance) {
+                    closestDistance = distance;
+                    closestIndex = index;
+                }
+            });
+
+            const targetCard = cards[closestIndex];
+
+            container.scrollTo({
+                left: targetCard.offsetLeft - (container.offsetWidth - targetCard.offsetWidth) / 2,
+                behavior: "smooth"
+            });
+
+        }, 120); // počkáme kým inerčný scroll skončí
+    });
+}
+    </script>
+</body>
+</html>
