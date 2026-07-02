@@ -376,6 +376,13 @@
     opacity: 1.0;
 }
 
+.no-event-sub {
+    font-size: clamp(11px, 3.2vw, 14px);
+    color: #ccc;
+    text-shadow: 1px 1px 0 #000;
+    letter-spacing: 1px;
+}
+
 /* --- NOVÉ: tlačidlá v detaile koncertu --- */
 .btn-cal { color: var(--accent-color); border: 1px solid var(--accent-color); }
 .btn-share { color: #fff; border: 1px solid #fff; }
@@ -871,7 +878,13 @@ const clean = cols.map(c =>
                     startCountdown(nextEventDate, nextEventTitle);
                     document.getElementById('dynamic-upcoming-img').src = nextEventIcon || defaultUpcomingImg;
                 } else {
-                    document.getElementById('countdown-bar').style.display = 'none';
+                    if (updateTimer) clearInterval(updateTimer);
+                    const bar = document.getElementById('countdown-bar');
+                    bar.style.display = 'block';
+                    bar.innerHTML = `
+                        <div class="count-band">PRACUJEME NA ĎALŠÍCH KÔŇCERTOCH</div>
+                        <div class="no-event-sub">SLEDUJTE NÁS, ČOSKORO PRIDÁME NOVÝ TERMÍN</div>
+                    `;
                     document.getElementById('dynamic-upcoming-img').src = defaultUpcomingImg;
                 }
 
